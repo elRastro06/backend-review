@@ -2,10 +2,12 @@
 
 import express from "express";
 import v2 from "./v2.mjs";
+import cors from "cors";
 
 const app = express();
 const port = 5008;
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

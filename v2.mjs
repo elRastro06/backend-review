@@ -49,7 +49,21 @@ app.get("/", async (req, res) => {
 
 app.post("/", async (req, res) => {
   try {
-    const product = req.body;
+    const review = req.body;
+
+    
+
+    let result = await reviews.insertOne({ ...review, date: new Date() });
+        res.send(result).status(200);
+  } catch (e) {
+    res.send(e).status(500);
+  }
+});
+
+/* complex version
+app.post("/", async (req, res) => {
+  try {
+    const review = req.body;
 
     
 
@@ -64,18 +78,27 @@ app.post("/", async (req, res) => {
         result = { information: "Review not inserted, no product exchanged between the two"};
         status = 400;
       } else {
-        result = await reviews.insertOne({ ...reviews, date: new Date() });
+        result = await reviews.insertOne({ ...review, date: new Date() });
         res.send(result).status(200);
       }
     }
   } catch (e) {
     res.send(e).status(500);
   }
-});
+});*/
 
 app.get("/:id", async (req, res) => {
   try {
     const result = await reviews.findOne({ _id: new ObjectId(req.params.id) });
+    res.send(result).status(200);
+  } catch (e) {
+    res.send(e).status(500);
+  }
+});
+
+app.get("/:id1/:id2", async (req, res) => { //reviewer (user) primero, reviewed segundo
+  try {
+    const result = await reviews.findOne({ reviewerID: req.params.id1, reviewedID: req.params.id2 });
     res.send(result).status(200);
   } catch (e) {
     res.send(e).status(500);
