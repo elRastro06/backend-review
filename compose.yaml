@@ -1,7 +1,0 @@
-version: '3.1'
-services:
-  reviews:
-    build: .
-    container_name: reviews
-    ports:
-      - 5008:5008
