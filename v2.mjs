@@ -16,31 +16,34 @@ app.get("/", async (req, res) => {
     let limit = 0;
     const queries = req.query;
 
-    //console.log(`hola`);
-
     if (queries.reviewerID) {
-        filtro = { ...filtro, reviewerID: queries.reviewerID };
+      filtro = { ...filtro, reviewerID: queries.reviewerID };
     }
-    if(queries.reviewedID) {
-        filtro = { ...filtro, reviewedID: queries.reviewedID };
-    }
-
-    if(queries.orderBy && queries.order) {
-        if (queries.order == "asc") {
-            orden = { ...orden, [queries.orderBy]: 1 };
-        } else if (queries.order == "desc") {
-            orden = { ...orden, [queries.orderBy]: -1 };
-        }
+    if (queries.reviewedID) {
+      filtro = { ...filtro, reviewedID: queries.reviewedID };
     }
 
-    if(queries.offset) {
-        offset = parseInt(queries.offset);
-    }
-    if(queries.limit) {
-        limit = parseInt(queries.limit);
+    if (queries.orderBy && queries.order) {
+      if (queries.order == "asc") {
+        orden = { ...orden, [queries.orderBy]: 1 };
+      } else if (queries.order == "desc") {
+        orden = { ...orden, [queries.orderBy]: -1 };
+      }
     }
 
-    let results = await reviews.find(filtro).sort(orden).skip(offset).limit(limit).toArray();
+    if (queries.offset) {
+      offset = parseInt(queries.offset);
+    }
+    if (queries.limit) {
+      limit = parseInt(queries.limit);
+    }
+
+    let results = await reviews
+      .find(filtro)
+      .sort(orden)
+      .skip(offset)
+      .limit(limit)
+      .toArray();
     res.send(results).status(200);
   } catch (e) {
     res.send(e).status(500);
@@ -51,10 +54,8 @@ app.post("/", async (req, res) => {
   try {
     const review = req.body;
 
-    
-
     let result = await reviews.insertOne({ ...review, date: new Date() });
-        res.send(result).status(200);
+    res.send(result).status(200);
   } catch (e) {
     res.send(e).status(500);
   }
@@ -96,9 +97,13 @@ app.get("/:id", async (req, res) => {
   }
 });
 
-app.get("/:id1/:id2", async (req, res) => { //reviewer (user) primero, reviewed segundo
+app.get("/:id1/:id2", async (req, res) => {
+  //reviewer (user) primero, reviewed segundo
   try {
-    const result = await reviews.findOne({ reviewerID: req.params.id1, reviewedID: req.params.id2 });
+    const result = await reviews.findOne({
+      reviewerID: req.params.id1,
+      reviewedID: req.params.id2,
+    });
     res.send(result).status(200);
   } catch (e) {
     res.send(e).status(500);
