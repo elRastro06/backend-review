@@ -1,7 +1,7 @@
 //Consultas a servicios externos. Editar como sea necesario
 
 import axios from "axios";
-const urlProductov2 = "http://localhost:5001/v2"
+const urlProductov2 = `${process.env.PRODUCTS_URL}/v2`
 
 //untested
 export const reviewBetweenUsers = async (id1, id2) => {
