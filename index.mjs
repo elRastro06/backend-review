@@ -20,13 +20,21 @@ const clients = process.env.CLIENTS != undefined ? process.env.CLIENTS : "localh
 
 const verifyToken = async (req, res, next) => {
   try {
-    const response = await axios.get(`http://${clients}:5000/checkToken/${req.headers.authorization}`);
-    const user = response.data.user;
+    if (req.method != "GET") {
+      const response = await axios.get(`http://${clients}:5000/checkToken/${req.headers.authorization}`);
+      const user = response.data.user;
 
-    if ((req.method == 'PUT' || req.method == 'DELETE') && req.params.id != undefined) {
+      if ((req.method == 'PUT' || req.method == 'DELETE') && req.params.id != undefined) {
         const review = await reviews.findOne({ _id: new ObjectId(req.params.id) });
-        if (review.reviewerID != user._id) res.status(402).send("Unauthorized action");
-    } else if (req.method == 'POST' && req.body.reviewerID != user._id) res.status(402).send("Unauthorized action");
+        if (review.reviewerID != user._id) {
+          res.status(402).send("Unauthorized action");
+          return;
+        }
+      } else if (req.method == 'POST' && req.body.reviewerID != user._id) {
+        res.status(402).send("Unauthorized action");
+        return;
+      }
+    }
 
     next();
   } catch {
